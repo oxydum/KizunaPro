@@ -1,0 +1,778 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 900" width="100%" height="100%">
+    <style>
+        :root { --bg: #1a202c; --panel: #2d3748; --panel-light: #4a5568; --text: #e2e8f0; --text-muted: #a0aec0; --accent: #f59e0b; --accent-2: #fbbf24; --danger: #ef4444; --success: #48bb78; --info: #4299e1; }
+        foreignObject { overflow: visible; }
+        body { margin: 0; padding: 0; color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; box-sizing: border-box; background: transparent; }
+        * { box-sizing: border-box; }
+        .app-container { display: flex; flex-direction: column; width: 1400px; height: 900px; overflow: hidden; background: transparent; }
+        .header { display: flex; align-items: center; padding: 15px 20px; background: #2d3748; border-bottom: 1px solid #4a5568; flex-shrink: 0; height: 60px; }
+        .main-content { display: flex; flex: 1; overflow: hidden; background: transparent; }
+        .sidebar { width: 240px; background: #2d3748; border-right: 1px solid #4a5568; padding: 0; display: flex; flex-direction: column; flex-shrink: 0; overflow-y: auto; }
+        .sidebar-section { padding: 20px; border-bottom: 1px solid #4a5568; }
+        .sidebar-title { font-size: 11px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; }
+        .sidebar-btn { display: block; width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--panel-light); padding: 10px; border-radius: 4px; cursor: pointer; margin-bottom: 10px; text-align: left; font-size: 13px; }
+        .sidebar-btn:hover { background: var(--panel-light); border-color: var(--accent); }
+        .mini-stat { background: var(--bg); padding: 12px; border-radius: 6px; margin-bottom: 10px; border-left: 3px solid var(--info); }
+        .mini-stat-label { font-size: 11px; color: var(--text-muted); }
+        .mini-stat-val { font-size: 16px; font-weight: bold; color: #fff; margin-top: 4px; }
+        .view-area { flex: 1; padding: 25px; overflow-y: auto; background: transparent; position: relative; }
+        .view { display: none; height: 100%; background: transparent; }
+        .view.active { display: block; }
+        .panel { background: var(--panel); border-radius: 8px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); margin-bottom: 20px; position: relative; }
+        .btn { background: var(--accent); color: #1a202c; border: none; padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 14px; }
+        .btn:hover { background: var(--accent-2); }
+        .btn-sm { padding: 4px 10px; font-size: 12px; }
+        .btn-danger { background: var(--danger); color: white; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-info { background: var(--info); color: white; }
+        input[type="text"], input[type="number"], input[type="date"], select, textarea { width: 100%; background: var(--bg); color: var(--text); border: 1px solid var(--panel-light); padding: 8px 10px; border-radius: 4px; font-size: 14px; outline: none; }
+        input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+        input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; }
+        input[type="color"] { width: 100%; height: 35px; border: 1px solid var(--panel-light); border-radius: 4px; background: var(--bg); cursor: pointer; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group label { font-size: 12px; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th { text-align: left; padding: 12px; border-bottom: 2px solid var(--panel-light); color: var(--text-muted); font-size: 12px; text-transform: uppercase; }
+        .table td { padding: 12px; border-bottom: 1px solid var(--panel-light); font-size: 14px; }
+        #error_box { background: var(--danger); color: white; padding: 10px; border-radius: 4px; display: none; font-weight: bold; margin: 20px; position: fixed; bottom: 10px; left: 10px; right: 10px; z-index: 200; }
+        .stat-card { background: var(--bg); padding: 15px; border-radius: 6px; border-left: 4px solid var(--accent); transition: all 0.2s; }
+        .stat-card.editable { cursor: pointer; border-left-color: var(--success); }
+        .stat-card.editable:hover { background: #2d3748; transform: translateY(-2px); }
+        .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; display: flex; justify-content: space-between; align-items: center; }
+        .stat-val { font-size: 18px; color: white; font-weight: bold; }
+        .badge { padding: 3px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; margin-right: 4px; display: inline-block; }
+        .badge-cdi { background: rgba(72, 187, 120, 0.2); color: var(--success); }
+        .badge-cdd { background: rgba(245, 158, 11, 0.2); color: var(--accent); }
+        .badge-rqth { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.4); }
+        .badge-h { background: rgba(66, 153, 225, 0.2); color: var(--info); }
+        .badge-f { background: rgba(236, 72, 153, 0.2); color: #ec4899; }
+        h1, h2, h3 { margin: 0 0 15px 0; color: var(--text); }
+        h1 { font-size: 24px; } h2 { font-size: 20px; border-bottom: 1px solid var(--panel-light); padding-bottom: 10px; } h3 { font-size: 16px; color: var(--accent); }
+        .vis-container { background: transparent; box-shadow: none; padding: 0; position: relative; height: 400px; border: 1px dashed #4a5568; border-radius: 8px; z-index: 1; margin-bottom: 20px; pointer-events: none; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; pointer-events: auto; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--panel); padding: 25px; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--panel-light); }
+        .payslip { background: #fff; color: #333; line-height: 1.5; }
+        .notice { background: #2d3748; border-left: 4px solid var(--info); padding: 15px; margin-bottom: 20px; font-size: 13px; color: var(--text-muted); }
+        .dyn-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; }
+        .dyn-row input, .dyn-row select { padding: 6px; font-size: 13px; }
+        .slider-group { margin-bottom: 15px; }
+        .slider-group label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; }
+        #toast { position: fixed; bottom: 30px; right: 30px; background: var(--success); color: white; padding: 12px 24px; border-radius: 6px; font-weight: bold; font-size: 14px; z-index: 500; opacity: 0; transition: opacity 0.3s, transform 0.3s; transform: translateY(20px); pointer-events: none; }
+        #toast.show { opacity: 1; transform: translateY(0); }
+        .dash-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-bottom: 20px; }
+        .kpi-card { background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%); border-radius: 8px; padding: 20px; border-left: 5px solid var(--accent); box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .kpi-card.blue { border-left-color: var(--info); } .kpi-card.red { border-left-color: var(--danger); } .kpi-card.green { border-left-color: var(--success); }
+        .kpi-label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 8px; }
+        .kpi-value { font-size: 28px; font-weight: bold; color: #fff; }
+        .kpi-sub { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+        .chart-container { display: flex; align-items: flex-end; justify-content: space-between; height: 250px; padding-top: 20px; border-bottom: 2px solid var(--panel-light); position: relative; }
+        .chart-bar-group { display: flex; flex-direction: column; align-items: center; width: 8%; gap: 5px; }
+        .chart-bars { display: flex; align-items: flex-end; gap: 3px; height: 180px; width: 100%; justify-content: center; }
+        .chart-bar { width: 8px; border-radius: 3px 3px 0 0; transition: height 0.5s ease; }
+        .chart-bar.brut { background-color: var(--accent); } .chart-bar.net { background-color: var(--success); } .chart-bar.cost { background-color: var(--danger); }
+        .chart-label { font-size: 11px; color: var(--text-muted); }
+        .donut-chart-wrapper { display: flex; align-items: center; justify-content: space-around; }
+        .top-emp-row { display: flex; align-items: center; margin-bottom: 10px; }
+        .top-emp-name { width: 150px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .top-emp-bar-bg { flex: 1; height: 12px; background: var(--bg); border-radius: 6px; overflow: hidden; margin: 0 10px; }
+        .top-emp-bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 6px; }
+        .top-emp-val { width: 80px; text-align: right; font-size: 13px; font-weight: bold; }
+        .legend { display: flex; gap: 15px; margin-bottom: 15px; }
+        .legend-item { display: flex; align-items: center; font-size: 12px; color: var(--text-muted); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; }
+        .parity-chart { display: flex; height: 200px; align-items: flex-end; gap: 40px; justify-content: center; padding-top: 20px; }
+        .parity-col { display: flex; flex-direction: column; align-items: center; width: 80px; }
+        .parity-bar { width: 60px; border-radius: 6px 6px 0 0; transition: height 0.5s ease; display: flex; justify-content: center; align-items: flex-start; color: #fff; font-weight: bold; padding-top: 5px; }
+        .parity-bar.male { background: var(--info); } .parity-bar.female { background: #ec4899; }
+        .parity-label { margin-top: 10px; font-size: 14px; font-weight: bold; color: var(--text-muted); }
+        .parity-gap { background: var(--bg); padding: 15px; border-radius: 8px; text-align: center; margin-top: 15px; border: 1px dashed var(--danger); }
+        .rule-row { display: flex; gap: 5px; margin-bottom: 10px; align-items: center; background: var(--bg); padding: 10px; border-radius: 4px; border: 1px solid var(--panel-light); }
+        .rule-row input, .rule-row select { padding: 6px; font-size: 12px; background: var(--panel); border: 1px solid var(--panel-light); color: #fff; border-radius: 4px; }
+        .sankey-text { fill: var(--text); font-size: 13px; font-family: sans-serif; pointer-events: none; font-weight: bold; }
+        .sankey-path { transition: d 0.4s ease, fill 0.3s ease; fill-opacity: 0.65; pointer-events: none; }
+        .sankey-rect { transition: all 0.4s ease; pointer-events: none; }
+        @keyframes pulse-musubi { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .logo-musubi-dot { animation: pulse-musubi 2s infinite ease-in-out; }
+    </style>
+    <rect id="bg_rect" x="0" y="0" width="1400" height="900" fill="#1a202c" pointer-events="none" />
+    <text id="debug_text" x="20" y="30" fill="#ef4444" font-size="20" font-weight="bold" font-family="sans-serif" pointer-events="none">JS: En attente...</text>
+    <text id="sankey_hint" x="870" y="120" fill="#f59e0b" font-size="14" font-weight="bold" font-family="sans-serif" pointer-events="none" style="display:none;">Diagramme interactif : Cliquez sur les cartes ou utilisez les curseurs</text>
+    <g id="sankey_group" transform="translate(615, 85)" style="display:none;">
+        <defs>
+            <linearGradient id="flow_grad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8"/><stop offset="100%" stop-color="#fbbf24" stop-opacity="0.8"/></linearGradient>
+            <linearGradient id="flow_red" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#f59e0b" stop-opacity="0.8"/><stop offset="100%" stop-color="#ef4444" stop-opacity="0.8"/></linearGradient>
+            <linearGradient id="flow_green" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#fbbf24" stop-opacity="0.8"/><stop offset="100%" stop-color="#48bb78" stop-opacity="0.8"/></linearGradient>
+        </defs>
+        <path id="path_emp_brut" class="sankey-path" fill="url(#flow_grad)" stroke="none"></path>
+        <path id="path_emp_pat" class="sankey-path" fill="url(#flow_red)" stroke="none"></path>
+        <path id="path_brut_net" class="sankey-path" fill="url(#flow_grad)" stroke="none"></path>
+        <path id="path_brut_sal" class="sankey-path" fill="url(#flow_red)" stroke="none"></path>
+        <path id="path_net_pay" class="sankey-path" fill="url(#flow_green)" stroke="none"></path>
+        <path id="path_net_tax" class="sankey-path" fill="url(#flow_red)" stroke="none"></path>
+        <rect id="node_emp" class="sankey-rect" fill="#f59e0b" rx="3"></rect>
+        <rect id="node_brut" class="sankey-rect" fill="#fbbf24" rx="3"></rect>
+        <rect id="node_pat" class="sankey-rect" fill="#ef4444" rx="3"></rect>
+        <rect id="node_sal" class="sankey-rect" fill="#ef4444" rx="3"></rect>
+        <rect id="node_net" class="sankey-rect" fill="#fbbf24" rx="3"></rect>
+        <rect id="node_tax" class="sankey-rect" fill="#ef4444" rx="3"></rect>
+        <rect id="node_pay" class="sankey-rect" fill="#48bb78" rx="3"></rect>
+        <text id="text_emp" class="sankey-text" text-anchor="end" dominant-baseline="middle"></text>
+        <text id="text_brut" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+        <text id="text_pat" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+        <text id="text_net" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+        <text id="text_sal" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+        <text id="text_pay" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+        <text id="text_tax" class="sankey-text" text-anchor="start" dominant-baseline="middle"></text>
+    </g>
+    <foreignObject x="0" y="0" width="1400" height="900">
+        <div xmlns="http://www.w3.org/1999/xhtml" id="app_root" class="app-container">
+            <div class="header">
+                <div style="display:flex; align-items:center; margin-right: 40px;">
+                    <svg viewBox="0 0 60 30" width="45" height="22" xmlns="http://www.w3.org/2000/svg" style="margin-right: 10px;">
+                        <g fill="none" stroke-width="6" stroke-linecap="round">
+                            <path d="M 5,15 C 5,5 20,5 35,15 C 50,25 55,25 55,15 C 55,5 40,5 35,15 C 20,25 5,25 5,15 Z" stroke="#f59e0b"/>
+                            <path d="M 5,15 C 5,5 20,5 35,15 C 50,25 55,25 55,15 C 55,5 40,5 35,15 C 20,25 5,25 5,15 Z" stroke="#4299e1" stroke-dasharray="15 45" stroke-dashoffset="5"/>
+                            <circle class="logo-musubi-dot" cx="30" cy="15" r="3" fill="#48bb78" stroke="none" />
+                        </g>
+                    </svg>
+                    <div style="font-size:22px; font-weight:bold; color:#f59e0b; letter-spacing: 0.5px;">Kizuna <span style="color:#e2e8f0;">Pro</span></div>
+                </div>
+                <button id="btn_nav_dash" class="btn" style="background:none; color:#f59e0b; margin-left:10px;">Tableau de Bord</button>
+                <button id="btn_nav_emp" class="btn" style="background:none; color:#a0aec0; margin-left:10px;">Employés</button>
+                <button id="btn_nav_pay" class="btn" style="background:none; color:#a0aec0; margin-left:10px;">Paie &amp; Calcul</button>
+                <button id="btn_nav_hist" class="btn" style="background:none; color:#a0aec0; margin-left:10px;">Historique</button>
+                <button id="btn_nav_param" class="btn" style="background:none; color:#a0aec0; margin-left:10px;">Paramètres</button>
+                <div style="margin-left:auto; display:flex; gap:10px;"><button id="btn_export" class="btn">Exporter SVG</button></div>
+            </div>
+            <div class="main-content">
+                <div class="sidebar">
+                    <div class="sidebar-section"><div class="sidebar-title">Contexte Global</div><div class="form-group" style="margin:0;"><label>Année de Référence</label><input type="number" id="global_year" min="2000" max="2100" style="font-weight:bold; text-align:center;"/></div></div>
+                    <div class="sidebar-section"><div class="sidebar-title">Actions Rapides</div><button id="side_btn_new_pay" class="sidebar-btn">+ Nouvelle Paie</button><button id="side_btn_new_emp" class="sidebar-btn">+ Ajouter Salarié</button></div>
+                    <div class="sidebar-section"><div class="sidebar-title">Vue d'Ensemble</div><div class="mini-stat"><div class="mini-stat-label">Salariés Actifs</div><div class="mini-stat-val" id="side_emp_count">0</div></div><div class="mini-stat" style="border-left-color: var(--danger);"><div class="mini-stat-label">Coût Total (Année)</div><div class="mini-stat-val" id="side_year_cost">0 €</div></div></div>
+                    <div style="margin-top:auto; padding: 20px;"><div style="font-size:12px; color:#718096;">Version 26.0</div><div style="font-size:12px; color:#718096;">© Kizuna Pro</div></div>
+                </div>
+                <div class="view-area">
+                    <div id="view_dashboard" class="view active">
+                        <h1>Tableau de Bord Analytique</h1>
+                        <div class="dash-grid">
+                            <div class="kpi-card"><div class="kpi-label">Masse Salariale (Brut)</div><div id="dash_kpi_brut" class="kpi-value">0 €</div><div class="kpi-sub">Cumul Annuel</div></div>
+                            <div class="kpi-card green"><div class="kpi-label">Net à Payer</div><div id="dash_kpi_net" class="kpi-value">0 €</div><div class="kpi-sub">Cumul Annuel</div></div>
+                            <div class="kpi-card red"><div class="kpi-label">Charges Patronales</div><div id="dash_kpi_pat" class="kpi-value">0 €</div><div class="kpi-sub">Cumul Annuel</div></div>
+                            <div class="kpi-card blue"><div class="kpi-label">Coût Employeur Total</div><div id="dash_kpi_cost" class="kpi-value">0 €</div><div class="kpi-sub">Cumul Annuel</div></div>
+                        </div>
+                        <div class="panel">
+                            <h3>Évolution Mensuelle</h3>
+                            <div class="legend"><div class="legend-item"><div class="legend-dot" style="background:var(--accent);"></div>Brut</div><div class="legend-item"><div class="legend-dot" style="background:var(--success);"></div>Net à Payer</div><div class="legend-item"><div class="legend-dot" style="background:var(--danger);"></div>Coût Total</div></div>
+                            <div id="dash_monthly_chart" class="chart-container"></div>
+                        </div>
+                        <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:20px;">
+                            <div class="panel"><h3>Répartition Trimestrielle</h3><div id="dash_quarterly_chart" class="donut-chart-wrapper"></div></div>
+                            <div class="panel"><h3>Top Salariés (Coût)</h3><div id="dash_top_emp"></div></div>
+                            <div class="panel"><h3>Parité H/F (Salaire Moyen)</h3><div id="dash_parity_chart" class="parity-chart"></div><div id="dash_parity_gap" class="parity-gap"></div></div>
+                        </div>
+                    </div>
+                    <div id="view_employes" class="view">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h1>Gestion des Salariés</h1><button id="btn_add_emp" class="btn btn-success">+ Ajouter un Salarié</button></div>
+                        <div class="panel" style="padding:0; overflow:hidden;"><table class="table"><thead><tr><th>ID</th><th>Nom Prénom</th><th>Poste</th><th>Statuts</th><th>Salaire Base</th><th>Actions</th></tr></thead><tbody id="emp_table_body"></tbody></table></div>
+                    </div>
+                    <div id="view_paie" class="view">
+                        <h1>Édition de la Paie</h1>
+                        <div style="display:grid; grid-template-columns: 350px 1fr; gap:20px;">
+                            <div>
+                                <div class="panel"><h3>Sélection et Période</h3><div class="form-group" style="margin-bottom:15px;"><label>Salarié</label><select id="pay_select_emp"></select></div><div class="form-grid"><div class="form-group"><label>Mois</label><select id="pay_month"><option value="1">Janvier</option><option value="2">Février</option><option value="3">Mars</option><option value="4">Avril</option><option value="5">Mai</option><option value="6">Juin</option><option value="7">Juillet</option><option value="8">Août</option><option value="9">Septembre</option><option value="10">Octobre</option><option value="11">Novembre</option><option value="12">Décembre</option></select></div><div class="form-group"><label>Année</label><input type="number" id="pay_year" min="2000" max="2100"/></div></div></div>
+                                <div class="panel"><h3>Éléments Variables du Mois</h3><div style="display:flex; font-weight:bold; color:var(--text-muted); font-size:11px; margin-bottom:5px; padding:0 5px; text-transform:uppercase;"><span style="flex:2;">Libellé</span><span style="flex:1;">Base</span><span style="flex:1.5;">Formule</span><span style="flex:1;">Sens</span><span style="width:30px;"></span></div><div id="dyn_rows_container"></div><button id="btn_add_pay_row" class="btn btn-info btn-sm" style="margin-top:10px; width:100%;">+ Ajouter une ligne</button></div>
+                                <button id="btn_calc_pay" class="btn btn-success" style="width:100%; padding:12px; margin-top:10px;">Calculer &amp; Sauvegarder</button>
+                            </div>
+                            <div>
+                                <div class="vis-container"></div>
+                                <div class="panel">
+                                    <h3>Synthèse et Simulation Interactive</h3>
+                                    <div style="background:var(--bg); padding:15px; border-radius:8px; margin-bottom:20px;">
+                                        <div class="slider-group"><label>Salaire de Base (Brut) <span id="val_slider_brut" style="color:var(--accent); font-weight:bold;">0 €</span></label><input type="range" id="slider_brut" min="1000" max="10000" step="50" value="3000"/></div>
+                                        <div class="slider-group"><label>Taux Cotis. Salariales <span id="val_slider_sal" style="color:var(--danger); font-weight:bold;">0 %</span></label><input type="range" id="slider_sal" min="0" max="50" step="0.1" value="22"/></div>
+                                        <div class="slider-group"><label>Taux Cotis. Patronales <span id="val_slider_pat" style="color:var(--danger); font-weight:bold;">0 %</span></label><input type="range" id="slider_pat" min="0" max="80" step="0.1" value="42"/></div>
+                                        <div class="slider-group" style="margin-bottom:0;"><label>Taux Prélèvement à la Source <span id="val_slider_pas" style="color:var(--danger); font-weight:bold;">0 %</span></label><input type="range" id="slider_pas" min="0" max="50" step="0.1" value="0"/></div>
+                                    </div>
+                                    <div id="stat_board" style="display:grid; grid-template-columns:repeat(3, 1fr); gap:15px;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="view_historique" class="view">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;"><h1>Historique des Bulletins</h1><button id="btn_print_all" class="btn btn-info">Imprimer Tous les Bulletins (PDF)</button></div>
+                        <div class="panel" style="padding:0; overflow:hidden;"><table class="table"><thead><tr><th>ID Bull.</th><th>Salarié</th><th>Période</th><th>Brut</th><th>Net à Payer</th><th>Coût Emp.</th><th>Actions</th></tr></thead><tbody id="hist_table_body"></tbody></table></div>
+                    </div>
+                    <div id="view_parametres" class="view">
+                        <h1>Paramètres de Paie (Moteur de Règles)</h1>
+                        <div class="notice">Créez des profils (ex: Cadre, Non-Cadre) et dupliquez-les pour gérer les évolutions annuelles (plafonds, taux). Vous pouvez utiliser le code d'une règle comme base d'une autre règle (les règles s'évaluent de haut en bas).</div>
+                        <div class="panel"><h3>Informations de l'Entreprise</h3><div class="form-grid"><div class="form-group"><label>Raison Sociale</label><input type="text" id="company_name"/></div><div class="form-group"><label>SIRET</label><input type="text" id="company_siret"/></div></div><div class="form-group" style="margin-top:15px;"><label>Adresse</label><input type="text" id="company_address"/></div><div class="form-grid" style="margin-top:15px;"><div class="form-group"><label>Code APE / NAF</label><input type="text" id="company_ape"/></div><div class="form-group"><label>Convention Collective</label><input type="text" id="company_conv"/></div></div><div class="form-group" style="margin-top:15px;"><label>Logo (URL ou Base64)</label><input type="text" id="company_logo" placeholder="https://... ou data:image/png;base64,..."/></div><button id="btn_save_company" class="btn btn-info" style="margin-top:15px;">Sauvegarder l'Entreprise</button></div>
+                        <div class="panel"><h3>Mise en Page Avancée du Bulletin</h3><div class="form-group" style="margin-bottom: 15px;"><label>Modèle de bulletin (Look)</label><select id="param_layout_template"><option value="classique">Classique</option><option value="moderne">Moderne</option><option value="minimaliste">Minimaliste</option></select></div><div class="form-grid"><div class="form-group"><label>Police</label><select id="param_layout_font"><option value="Courier New">Courier New</option><option value="Arial">Arial</option><option value="Times New Roman">Times New Roman</option></select></div><div class="form-group"><label>Taille</label><select id="param_layout_size"><option value="10px">10px</option><option value="12px" selected="selected">12px</option><option value="14px">14px</option></select></div><div class="form-group"><label>Marges (px)</label><input type="number" id="param_layout_margin" value="30"/></div><div class="form-group"><label>Colonnes</label><select id="param_layout_cols"><option value="1">1</option><option value="2" selected="selected">2</option><option value="3">3</option></select></div><div class="form-group"><label>Couleur Titres</label><input type="color" id="param_layout_titlecolor" value="#f59e0b"/></div><div class="form-group"><label>Fond Titres</label><input type="color" id="param_layout_titlebg" value="#1a202c"/></div></div><div class="form-group" style="margin-top:15px;"><label>Note de HAUT de page</label><textarea id="param_layout_header_note" style="height:50px;"></textarea></div><div class="form-group" style="margin-top:15px;"><label>Note de BAS de page</label><textarea id="param_layout_note" style="height:60px;"></textarea></div><button id="btn_save_layout" class="btn btn-info" style="margin-top:15px;">Sauvegarder la Mise en Page</button></div>
+                        <div class="panel"><h3>Allègements de Charges</h3><div class="form-grid"><div class="form-group"><label>Taux T (Fillon)</label><input type="number" id="param_taux_fillon" value="0.3194" step="0.0001"/></div><div class="form-group"><label>Aide Mensuelle RQTH (€)</label><input type="number" id="param_aide_rqth" value="150"/></div></div></div>
+
+                        <div class="panel">
+                            <h3>Moteur de Règles : Profils de Cotisations</h3>
+                            <div style="display:flex; gap:10px; margin-bottom:15px; align-items:center;">
+                                <select id="rule_profile_select" style="flex:1;"></select>
+                                <button id="btn_add_profile" class="btn btn-sm btn-success">Nouveau</button>
+                                <button id="btn_dup_profile" class="btn btn-sm btn-info">Dupliquer</button>
+                                <button id="btn_del_profile" class="btn btn-sm btn-danger">Suppr.</button>
+                            </div>
+
+                            <div class="form-grid" style="margin-bottom: 20px; background: var(--bg); padding: 15px; border-radius: 8px;">
+                                <div class="form-group"><label>SMIC Mensuel Brut (Profil)</label><input type="number" id="param_smic" value="1766.92"/></div>
+                                <div class="form-group"><label>Plafond Mensuel Sécu / PMSS (Profil)</label><input type="number" id="param_plafond" value="3864"/></div>
+                            </div>
+
+                            <div style="display:grid; grid-template-columns: 0.5fr 2fr 1fr 0.8fr 0.8fr 0.8fr 0.5fr; gap:5px; font-size:11px; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; padding:0 10px;"><span>Code</span><span>Libellé</span><span>Base</span><span style="text-align:right;">Taux Sal.%</span><span style="text-align:right;">Taux Pat.%</span><span style="text-align:right;">Plafond</span><span></span></div>
+                            <div id="ctrl_box"></div>
+                            <button id="btn_add_rule" class="btn btn-info btn-sm" style="margin-top:10px;">+ Ajouter une Règle au profil</button>
+                        </div>
+
+                        <div class="panel" style="text-align:right;"><button id="btn_save_params" class="btn btn-info">Sauvegarder tous les Paramètres</button></div>
+                    </div>
+                </div>
+            </div>
+            <div id="error_box"></div><div id="toast"></div>
+            <div class="modal-overlay" id="modal_emp"><div class="modal"><h2 id="modal_emp_title">Ajouter un Salarié</h2><input type="hidden" id="form_emp_id" /><div class="form-grid"><div class="form-group"><label>Nom</label><input type="text" id="form_emp_nom"/></div><div class="form-group"><label>Prénom</label><input type="text" id="form_emp_prenom"/></div><div class="form-group"><label>Poste</label><input type="text" id="form_emp_poste"/></div><div class="form-group"><label>Date d'embauche</label><input type="date" id="form_emp_date"/></div><div class="form-group"><label>Contrat</label><select id="form_emp_contrat"><option value="CDI">CDI</option><option value="CDD">CDD</option></select></div><div class="form-group"><label>Sexe</label><select id="form_emp_sexe"><option value="M">Homme</option><option value="F">Femme</option></select></div><div class="form-group"><label>Salaire de Base</label><input type="number" id="form_emp_salaire" value="1766.92"/></div><div class="form-group"><label>Temps de travail</label><input type="number" id="form_emp_heures" value="35"/></div><div class="form-group"><label>Taux PAS (%)</label><input type="number" id="form_emp_pas" value="0.0" step="0.1"/></div><div class="form-group"><label>Statut RQTH</label><select id="form_emp_rqth"><option value="false">Non</option><option value="true">Oui</option></select></div><div class="form-group"><label>Profil de Cotisation</label><select id="form_emp_profile"></select></div></div><div class="form-group" style="margin-top:15px;"><label>Convention Collective</label><input type="text" id="form_emp_conv" value="SYNTEC"/></div><div class="form-group" style="margin-top:15px;"><label>Adresse</label><input type="text" id="form_emp_adresse"/></div><div class="form-grid" style="margin-top:15px;"><div class="form-group"><label>Numéro SS</label><input type="text" id="form_emp_ss"/></div><div class="form-group"><label>IBAN</label><input type="text" id="form_emp_iban"/></div></div><div style="margin-top:20px; text-align:right;"><button id="btn_close_emp" class="btn btn-danger" style="margin-right:10px;">Annuler</button><button id="btn_save_emp" class="btn btn-success">Enregistrer</button></div></div></div>
+            <div class="modal-overlay" id="modal_bull"><div class="modal" style="max-width: 900px;"><div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;"><h2 style="margin:0; border:none;">Fiche de Paie Détaillée</h2><div><button id="btn_print_bull" class="btn btn-info" style="margin-right:10px;">Imprimer / PDF</button><button id="btn_close_bull" class="btn btn-danger">Fermer</button></div></div><div id="bull_content" class="payslip"></div></div></div>
+            <div class="modal-overlay" id="modal_export"><div class="modal" style="max-width: 900px;"><h2>Export SVG (Thème Clair)</h2><textarea id="export_text" readonly="readonly" style="width:100%; height:400px; background:#1a202c; color:#e2e8f0; border:1px solid #4a5568; border-radius:4px; padding:10px; font-family:monospace; font-size:12px;"></textarea><div style="margin-top:15px; text-align:right;"><button id="btn_close_export" class="btn btn-danger" style="margin-right:10px;">Fermer</button><a id="download_link" href="#" download="payroll_export.svg" class="btn" style="text-decoration:none; display:inline-block;">Télécharger SVG</a></div></div></div>
+            <script type="text/javascript">//<![CDATA[
+                try {
+                var dbg = document.getElementById('debug_text');
+                if (dbg) { dbg.textContent = 'JS: En cours...'; dbg.setAttribute('fill', '#f59e0b'); }
+                var H = 'http://www.w3.org/1999/xhtml';
+                function E(t) { return document.createElementNS(H, t); }
+                function getEl(id) { return document.getElementById(id); }
+                function showError(msg) { var e=getEl('error_box'); if(e){e.style.display='block'; e.innerHTML='Erreur: '+msg;} }
+                function showToast(msg) { var t=getEl('toast'); if(t){t.textContent=msg; t.classList.add('show'); setTimeout(function(){t.classList.remove('show');},3000);} }
+                function escapeXML(str) { if(!str) return ''; return str.toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&apos;'); }
+
+                var DB_NAME = 'KizunaPro_v260_payslip_redesign';
+                var defaultRules = [
+                { code: "MAL", nom: "Sécurité Sociale (Maladie)", base: "brut", sal: 0.75, pat: 13.00, plafond: 0 },
+                { code: "VIEP", nom: "Assurance Vieillesse Plafonnée", base: "brut", sal: 6.20, pat: 8.55, plafond: 1 },
+                { code: "VIED", nom: "Assurance Vieillesse Déplafonnée", base: "brut", sal: 0.40, pat: 1.90, plafond: 0 },
+                { code: "RETC", nom: "Retraite Complémentaire (TA)", base: "brut", sal: 3.15, pat: 4.72, plafond: 1 },
+                { code: "CHOM", nom: "Assurance Chômage", base: "brut", sal: 0.00, pat: 4.05, plafond: 4 },
+                { code: "CSGD", nom: "CSG/CRDS Déductible", base: "brut_abattu", sal: 6.80, pat: 0.00, plafond: 0 },
+                { code: "CSGND", nom: "CSG/CRDS Non Déductible", base: "brut_abattu", sal: 2.40, pat: 0.00, plafond: 0 }
+                ];
+                var defaultDB = {
+                company: { name: "Mon Entreprise SAS", address: "12 rue de l'Industrie, 75001 Paris", siret: "123 456 789 00012", ape: "6201Z", conv: "SYNTEC", logo: "" },
+                employes: [
+                { id: 1, nom: "Dubois", prenom: "Alice", sexe: "F", adresse: "10 rue Victor Hugo, 75011 Paris", num_ss: "285047512345", date_embauche: "2022-01-15", contrat: "CDI", poste: "Directrice Générale", salaire_base: 6000, temps_travail: 35, convention: "SYNTEC", rib: "FR76...", pas_rate: 10.0, rqth: false, rule_profile_id: 1 },
+                { id: 2, nom: "Moreau", prenom: "Luc", sexe: "M", adresse: "5 Place Bellecour, 69000 Lyon", num_ss: "180106212345", date_embauche: "2023-09-01", contrat: "CDI", poste: "Commercial", salaire_base: 2200, temps_travail: 35, convention: "Commerce", rib: "FR76...", pas_rate: 2.5, rqth: false, rule_profile_id: 1 },
+                { id: 3, nom: "Martin", prenom: "Paul", sexe: "M", adresse: "8 Av des Fleurs, 33000 Bordeaux", num_ss: "170057512345", date_embauche: "2023-03-10", contrat: "CDI", poste: "Agent d'entretien", salaire_base: 1500, temps_travail: 35, convention: "Bâtiment", rib: "FR76...", pas_rate: 0.0, rqth: true, rule_profile_id: 1 }
+                ],
+                bulletins: [],
+                params: {
+                taux_fillon: 0.3194, aide_rqth: 150,
+                layout: { template: 'classique', font: 'Arial', size: '12px', margin: 30, cols: 2, titlecolor: '#f59e0b', titlebg: '#1a202c', header_note: '', note: "Virement effectué le 25 du mois." },
+                rule_profiles: [
+                { id: 1, name: "Standard 2024", smic: 1766.92, plafond_ss: 3864, rules: defaultRules }
+                ],
+                nextProfileId: 2
+                },
+                nextEmpId: 4, nextBullId: 1
+                };
+
+                var DB;
+                try {
+                var data = localStorage.getItem(DB_NAME);
+                if (data) {
+                DB = JSON.parse(data);
+                if (!DB.company) DB.company = defaultDB.company;
+                if (!DB.params) DB.params = defaultDB.params;
+                if (!DB.params.rule_profiles) {
+                var oldRules = DB.params.custom_rules || defaultRules;
+                DB.params.rule_profiles = [{ id: 1, name: "Standard 2024", smic: DB.params.smic || 1766.92, plafond_ss: DB.params.plafond_ss || 3864, rules: oldRules }];
+                DB.params.nextProfileId = 2;
+                }
+                if (!DB.params.layout) DB.params.layout = defaultDB.params.layout;
+                if (!DB.employes || DB.employes.length === 0) DB.employes = defaultDB.employes;
+                for (var i=0; i<DB.employes.length; i++) {
+                    if (!DB.employes[i].rule_profile_id) DB.employes[i].rule_profile_id = 1;
+                    }
+                    } else { DB = JSON.parse(JSON.stringify(defaultDB)); }
+                    } catch(e) { DB = JSON.parse(JSON.stringify(defaultDB)); }
+
+                    function saveDB() { try { localStorage.setItem(DB_NAME, JSON.stringify(DB)); } catch(e) {} }
+
+                    var currentRuleProfileId = 1;
+
+                    function showView(viewName) {
+                    var views = ['dashboard', 'employes', 'paie', 'historique', 'parametres'];
+                    for (var i = 0; i < views.length; i++) { var el = getEl('view_' + views[i]); if (el) el.style.display = 'none'; }
+                        var activeView = getEl('view_' + viewName);
+                        if (activeView) activeView.style.display = 'block';
+                        var btns = [{id:'btn_nav_dash', v:'dashboard'}, {id:'btn_nav_emp', v:'employes'}, {id:'btn_nav_pay', v:'paie'}, {id:'btn_nav_hist', v:'historique'}, {id:'btn_nav_param', v:'parametres'}];
+                        for (var j = 0; j < btns.length; j++) { var b = getEl(btns[j].id); if (b) b.style.color = (btns[j].v === viewName) ? '#f59e0b' : '#a0aec0'; }
+                            var sankey = getEl('sankey_group'); var hint = getEl('sankey_hint');
+                            if (viewName === 'paie') { if(sankey) sankey.style.display = 'block'; if(hint) hint.style.display = 'block'; populatePayrollDropdown(); updateSlidersFromDB(); updateSankey(); }
+                            else { if(sankey) sankey.style.display = 'none'; if(hint) hint.style.display = 'none'; }
+                            if (viewName === 'historique') renderHistory();
+                            if (viewName === 'parametres') loadParams();
+                            if (viewName === 'dashboard') renderDashboard();
+                            }
+
+                            function updateSidebarStats() {
+                            var globalYear = parseInt(getEl('global_year').value) || new Date().getFullYear();
+                            getEl('side_emp_count').textContent = DB.employes.length;
+                            var yearCost = 0;
+                            for (var i=0; i<DB.bulletins.length; i++) { var b = DB.bulletins[i]; if (parseInt(b.annee) === globalYear) { yearCost += b.cout; } }
+                                getEl('side_year_cost').textContent = Math.round(yearCost).toLocaleString('fr-FR') + ' €';
+                                }
+
+                                function renderEmployes() {
+                                var tbody = getEl('emp_table_body'); if (!tbody) return; tbody.innerHTML = '';
+                                for (var i = 0; i < DB.employes.length; i++) {
+                                    var emp = DB.employes[i]; var tr = E('tr');
+                                    tr.innerHTML = '<td>'+emp.id+'</td><td>'+emp.nom+' '+emp.prenom+'</td><td>'+emp.poste+'</td><td><span class="badge badge-'+emp.contrat.toLowerCase()+'">'+emp.contrat+'</span>'+(emp.rqth?'<span class="badge badge-rqth">RQTH</span>':'')+'<span class="badge '+(emp.sexe==='F'?'badge-f':'badge-h')+'">'+(emp.sexe==='F'?'Femme':'Homme')+'</span></td><td>'+emp.salaire_base+' €</td><td style="white-space:nowrap;"><button class="btn btn-sm" id="edit_emp_'+emp.id+'" style="margin-right:5px;">Éditer</button><button class="btn btn-sm btn-info" id="dup_emp_'+emp.id+'" style="margin-right:5px;">Dupliquer</button><button class="btn btn-sm btn-danger" id="del_emp_'+emp.id+'">Suppr.</button></td>';
+                                    tbody.appendChild(tr);
+                                    }
+                                    updateSidebarStats();
+                                    }
+
+                                    function openEmpModal(id) {
+                                    var modal = getEl('modal_emp'); if (!modal) return; modal.style.display = 'flex';
+                                    var profileSelect = getEl('form_emp_profile'); profileSelect.innerHTML = '';
+                                    for(var i=0; i<DB.params.rule_profiles.length; i++) {
+                                        var p = DB.params.rule_profiles[i];
+                                        var opt = E('option'); opt.value = p.id; opt.textContent = p.name; profileSelect.appendChild(opt);
+                                        }
+
+                                        if (id) {
+                                        getEl('modal_emp_title').textContent = "Modifier le Salarié";
+                                        var emp = DB.employes.find(function(e) { return e.id === id; });
+                                        if (emp) {
+                                        getEl('form_emp_id').value = emp.id; getEl('form_emp_nom').value = emp.nom; getEl('form_emp_prenom').value = emp.prenom;
+                                        getEl('form_emp_poste').value = emp.poste; getEl('form_emp_date').value = emp.date_embauche; getEl('form_emp_contrat').value = emp.contrat;
+                                        getEl('form_emp_salaire').value = emp.salaire_base; getEl('form_emp_pas').value = emp.pas_rate || 0.0;
+                                        getEl('form_emp_conv').value = emp.convention; getEl('form_emp_adresse').value = emp.adresse; getEl('form_emp_ss').value = emp.num_ss; getEl('form_emp_iban').value = emp.rib;
+                                        getEl('form_emp_rqth').value = emp.rqth ? "true" : "false"; getEl('form_emp_sexe').value = emp.sexe || "M";
+                                        getEl('form_emp_profile').value = emp.rule_profile_id || 1;
+                                        }
+                                        } else {
+                                        getEl('modal_emp_title').textContent = "Ajouter un Salarié"; getEl('form_emp_id').value = '';
+                                        getEl('form_emp_date').value = new Date().toISOString().split('T')[0]; getEl('form_emp_contrat').value = 'CDI';
+                                        getEl('form_emp_salaire').value = DB.params.rule_profiles[0].smic || 1766.92; getEl('form_emp_pas').value = 0.0; getEl('form_emp_conv').value = 'SYNTEC';
+                                        getEl('form_emp_rqth').value = "false"; getEl('form_emp_sexe').value = "M"; getEl('form_emp_profile').value = 1;
+                                        }
+                                        }
+
+                                        function populatePayrollDropdown() {
+                                        var select = getEl('pay_select_emp'); if (!select) return; select.innerHTML = '';
+                                        for (var i = 0; i < DB.employes.length; i++) {
+                                            var emp = DB.employes[i]; var opt = E('option'); opt.value = emp.id; opt.textContent = emp.nom + ' ' + emp.prenom + ' (' + emp.poste + ')'; select.appendChild(opt);
+                                            }
+                                            }
+
+                                            function populateBaseSelects() {
+                                            var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; }) || DB.params.rule_profiles[0];
+                                            if(!profile) return;
+                                            var rules = profile.rules;
+                                            var ruleRows = document.querySelectorAll('#ctrl_box .rule-row');
+
+                                            for(var i=0; i<ruleRows.length; i++) {
+                                                var sel = getEl('rule_base_'+i); if(!sel) continue;
+                                                var currentVal = sel.value;
+                                                sel.innerHTML = '<option value="brut" '+(currentVal==='brut'?'selected="selected"':'')+'>Brut</option><option value="brut_abattu" '+(currentVal==='brut_abattu'?'selected="selected"':'')+'>Brut Abattu</option>';
+
+                                                for(var j=0; j<rules.length; j++) {
+                                                    if(j !== i) {
+                                                    var code = rules[j].code || ('R'+j);
+                                                    sel.innerHTML += '<option value="'+code+'" '+(currentVal===code?'selected="selected"':'')+'>'+code+'</option>';
+                                                    }
+                                                    }
+                                                    }
+                                                    }
+
+                                                    function loadParams() {
+                                                    getEl('company_name').value = DB.company.name; getEl('company_address').value = DB.company.address; getEl('company_siret').value = DB.company.siret; getEl('company_ape').value = DB.company.ape; getEl('company_conv').value = DB.company.conv; getEl('company_logo').value = DB.company.logo;
+                                                    getEl('param_taux_fillon').value = DB.params.taux_fillon; getEl('param_aide_rqth').value = DB.params.aide_rqth;
+                                                    getEl('param_layout_template').value = DB.params.layout.template || 'classique'; getEl('param_layout_font').value = DB.params.layout.font; getEl('param_layout_size').value = DB.params.layout.size; getEl('param_layout_margin').value = DB.params.layout.margin; getEl('param_layout_cols').value = DB.params.layout.cols || 2;
+                                                    getEl('param_layout_titlecolor').value = DB.params.layout.titlecolor || '#f59e0b'; getEl('param_layout_titlebg').value = DB.params.layout.titlebg || '#1a202c'; getEl('param_layout_header_note').value = DB.params.layout.header_note || ''; getEl('param_layout_note').value = DB.params.layout.note || '';
+
+                                                    var profSelect = getEl('rule_profile_select'); profSelect.innerHTML = '';
+                                                    for(var i=0; i<DB.params.rule_profiles.length; i++) {
+                                                        var p = DB.params.rule_profiles[i];
+                                                        var opt = E('option'); opt.value = p.id; opt.textContent = p.name; profSelect.appendChild(opt);
+                                                        }
+                                                        profSelect.value = currentRuleProfileId;
+
+                                                        var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; }) || DB.params.rule_profiles[0];
+                                                        if(!profile) return;
+
+                                                        getEl('param_smic').value = profile.smic || 1766.92;
+                                                        getEl('param_plafond').value = profile.plafond_ss || 3864;
+
+                                                        var rules = profile.rules;
+
+                                                        var ctrl = getEl('ctrl_box'); ctrl.innerHTML = '';
+                                                        for (var i = 0; i < rules.length; i++) {
+                                                            var r = rules[i];
+                                                            var row = E('div'); row.setAttribute('class', 'rule-row'); row.style.display = 'grid'; row.style.gridTemplateColumns = '0.5fr 2fr 1fr 0.8fr 0.8fr 0.8fr 0.5fr'; row.style.gap = '5px';
+                                                            row.innerHTML =
+                                                            '<input type="text" value="' + escapeXML(r.code||"") + '" id="rule_code_'+i+'" style="text-transform:uppercase;" />' +
+                                                            '<input type="text" value="' + escapeXML(r.nom) + '" id="rule_nom_'+i+'" />' +
+                                                            '<select id="rule_base_'+i+'"><option value="brut" '+(r.base==='brut'?'selected="selected"':'')+'>Brut</option><option value="brut_abattu" '+(r.base==='brut_abattu'?'selected="selected"':'')+'>Brut Abattu</option></select>' +
+                                                            '<input type="number" step="0.01" value="' + r.sal + '" id="rule_sal_'+i+'" style="text-align:right;" />' +
+                                                            '<input type="number" step="0.01" value="' + r.pat + '" id="rule_pat_'+i+'" style="text-align:right;" />' +
+                                                            '<select id="rule_plafond_'+i+'"><option value="0" '+(r.plafond===0?'selected="selected"':'')+'>Aucun</option><option value="1" '+(r.plafond===1?'selected="selected"':'')+'>1x PMSS</option><option value="4" '+(r.plafond===4?'selected="selected"':'')+'>4x PMSS</option><option value="8" '+(r.plafond===8?'selected="selected"':'')+'>8x PMSS</option></select>' +
+                                                            '<button class="btn btn-danger btn-sm" id="del_rule_'+i+'">X</button>';
+                                                            ctrl.appendChild(row);
+
+                                                            var codeInput = getEl('rule_code_'+i);
+                                                            if(codeInput) codeInput.addEventListener('change', populateBaseSelects);
+                                                            }
+                                                            populateBaseSelects();
+                                                            }
+
+                                                            var payRows = [];
+                                                            function clearPayRows() { var c = getEl('dyn_rows_container'); if(c) c.innerHTML = ''; payRows = []; }
+                                                            function addPayRow(label, base, formula, type) {
+                                                            var c = getEl('dyn_rows_container'); if (!c) return; var r = E('div'); r.setAttribute('class', 'dyn-row');
+                                                            r.innerHTML = '<input type="text" value="'+label+'" style="flex:2;" placeholder="Libellé" /><input type="number" value="'+base+'" style="flex:1;" placeholder="Base" /><input type="text" value="'+formula+'" style="flex:1.5;" placeholder="Formule" /><select style="flex:1"><option value="add_brut">+ Brut</option><option value="ded_brut">- Brut</option><option value="add_net">+ Net</option><option value="ded_net">- Net</option></select><button class="btn btn-danger btn-sm" style="width:30px;">X</button>';
+                                                            r.querySelector('select').value = type || 'add_brut'; c.appendChild(r);
+                                                            payRows.push({ rowDiv: r, labelInput: r.querySelectorAll('input')[0], baseInput: r.querySelectorAll('input')[1], formulaInput: r.querySelectorAll('input')[2], typeSelect: r.querySelector('select') });
+                                                            var inps = r.querySelectorAll('input'); for(var i=0; i<inps.length; i++) inps[i].addEventListener('input', updateSankey);
+                                                                r.querySelector('select').addEventListener('change', updateSankey);
+                                                                r.querySelector('button').addEventListener('click', function() { c.removeChild(r); payRows = payRows.filter(function(p){ return p.rowDiv !== r; }); updateSankey(); });
+                                                                }
+
+                                                                function getActiveProfile(emp) {
+                                                                var profileId = emp.rule_profile_id || 1;
+                                                                return DB.params.rule_profiles.find(function(p){ return p.id == profileId; }) || DB.params.rule_profiles[0];
+                                                                }
+
+                                                                function calcPayroll() {
+                                                                var empId = parseInt(getEl('pay_select_emp').value); var emp = DB.employes.find(function(e) { return e.id === empId; });
+                                                                if (!emp) return { emp_cost:0, brut:0, pat:0, sal:0, net_social:0, net_imp:0, tax:0, net_pay:0, max_val:0, cotis_details:[], line_items:[], reduc_fillon:0, reduc_rqth:0 };
+
+                                                                var profile = getActiveProfile(emp);
+                                                                if(!profile) return { emp_cost:0, brut:0, pat:0, sal:0, net_social:0, net_imp:0, tax:0, net_pay:0, max_val:0, cotis_details:[], line_items:[], reduc_fillon:0, reduc_rqth:0 };
+
+                                                                var brut = emp.salaire_base; var net_adjustments = 0; var lineItems = [];
+                                                                for (var i = 0; i < payRows.length; i++) {
+                                                                    var row = payRows[i]; var base = parseFloat(row.baseInput.value) || 0; var formula = row.formulaInput.value.trim() === '' ? 'base' : row.formulaInput.value;
+                                                                    var f = formula.toString().toLowerCase().replace(/\s/g, '').replace(/base/gi, base); var amount = base;
+                                                                    if (f !== '' && !isNaN(parseFloat(f)) && isFinite(f)) { amount = parseFloat(f); }
+                                                                    var type = row.typeSelect.value; lineItems.push({ label: row.labelInput.value, amount: amount, type: type });
+                                                                    if (type === 'add_brut') brut += amount; else if (type === 'ded_brut') brut -= amount; else if (type === 'add_net') net_adjustments += amount; else if (type === 'ded_net') net_adjustments -= amount;
+                                                                    }
+
+                                                                    var pmss = profile.plafond_ss || 3864;
+                                                                    var smic = profile.smic || 1766.92;
+
+                                                                    brut = Math.max(0, brut); var brut_abattu = brut * 0.9825;
+                                                                    var sal_total = 0; var pat_total = 0; var cotisDetails = [];
+                                                                    var computedAmounts = {};
+
+                                                                    var rules = profile.rules;
+                                                                    for (var i = 0; i < rules.length; i++) {
+                                                                        var r = rules[i];
+                                                                        var baseVal = 0;
+                                                                        if (r.base === 'brut') baseVal = brut;
+                                                                        else if (r.base === 'brut_abattu') baseVal = brut_abattu;
+                                                                        else if (r.base === 'net') baseVal = net_social;
+                                                                        else baseVal = computedAmounts[r.base] || 0;
+
+                                                                        var cappedBase = baseVal;
+                                                                        if (r.plafond > 0) { cappedBase = Math.min(baseVal, pmss * r.plafond); }
+
+                                                                        var partSal = cappedBase * (r.sal / 100); var partPat = cappedBase * (r.pat / 100);
+                                                                        sal_total += partSal; pat_total += partPat; cotisDetails.push({ nom: r.nom, sal: r.sal, pat: r.pat, partSal: partSal, partPat: partPat });
+
+                                                                        var code = r.code || ("R"+i);
+                                                                        computedAmounts[code] = (computedAmounts[code] || 0) + partSal + partPat;
+                                                                        }
+                                                                        var reduc_fillon = 0; if (brut > 0 && brut <= 1.6 * smic) { var coef = (DB.params.taux_fillon / 0.6) * ((1.6 * smic / brut) - 1); if (coef < 0) coef = 0; reduc_fillon = coef * brut; pat_total -= reduc_fillon; cotisDetails.push({ nom: "Réduction Fillon", sal: 0, pat: 0, partSal: 0, partPat: -reduc_fillon }); }
+                                                                                var reduc_rqth = 0; if (emp.rqth) { reduc_rqth = DB.params.aide_rqth || 0; pat_total -= reduc_rqth; cotisDetails.push({ nom: "Aide RQTH", sal: 0, pat: 0, partSal: 0, partPat: -reduc_rqth }); }
+                                                                                var net_social = brut - sal_total; var net_imp = net_social; var tax = net_imp * ((emp.pas_rate||0) / 100); var net_pay = net_imp - tax + net_adjustments; var emp_cost = brut + pat_total;
+                                                                                return { emp_cost: emp_cost, brut: brut, pat: pat_total, sal: sal_total, net_social: net_social, net_imp: net_imp, tax: tax, net_pay: net_pay, max_val: emp_cost, pas_rate: emp.pas_rate||0, reduc_fillon: reduc_fillon, reduc_rqth: reduc_rqth, cotis_details: cotisDetails, line_items: lineItems };
+                                                                                }
+
+                                                                                function getSankeyPath(x1, y1_top, y1_bot, x2, y2_top, y2_bot) {
+                                                                                var cx1 = x1 + (x2 - x1) * 0.5, cx2 = x2 - (x2 - x1) * 0.5;
+                                                                                y1_top = Math.max(0, y1_top); y1_bot = Math.max(y1_top, y1_bot); y2_top = Math.max(0, y2_top); y2_bot = Math.max(y2_top, y2_bot);
+                                                                                return "M "+x1+","+y1_top+" C "+cx1+","+y1_top+" "+cx2+","+y2_top+" "+x2+","+y2_top+" L "+x2+","+y2_bot+" C "+cx2+","+y2_bot+" "+cx1+","+y1_bot+" "+x1+","+y1_bot+" Z";
+                                                                                }
+
+                                                                                function updateSankey() {
+                                                                                var d = calcPayroll(); if (d.max_val === 0) return;
+                                                                                var scale = 350 / d.max_val, gap = 20, x0 = 0, x1 = 150, x2 = 300, x3 = 450, nw = 20;
+                                                                                var emp_h = d.emp_cost * scale, brut_h = d.brut * scale, pat_h = d.pat * scale, net_h = d.net_imp * scale, sal_h = d.sal * scale, pay_h = d.net_pay * scale, tax_h = d.tax * scale;
+
+                                                                                var p;
+                                                                                if(p=getEl('path_emp_brut')) p.setAttribute('d', getSankeyPath(x0+nw, 25, 25+brut_h, x1, 25, 25+brut_h));
+                                                                                if(p=getEl('path_emp_pat')) p.setAttribute('d', getSankeyPath(x0+nw, 25+brut_h, 25+emp_h, x1, 25+brut_h+gap, 25+brut_h+gap+pat_h));
+                                                                                if(p=getEl('path_brut_net')) p.setAttribute('d', getSankeyPath(x1+nw, 25, 25+net_h, x2, 25, 25+net_h));
+                                                                                if(p=getEl('path_brut_sal')) p.setAttribute('d', getSankeyPath(x1+nw, 25+net_h, 25+brut_h, x2, 25+net_h+gap, 25+net_h+gap+sal_h));
+                                                                                if(p=getEl('path_net_pay')) p.setAttribute('d', getSankeyPath(x2+nw, 25, 25+pay_h, x3, 25, 25+pay_h));
+                                                                                if(p=getEl('path_net_tax')) p.setAttribute('d', getSankeyPath(x2+nw, 25+pay_h, 25+net_h, x3, 25+pay_h+gap, 25+pay_h+gap+tax_h));
+
+                                                                                var setRect = function(id, x, y, h) { var el = getEl(id); if(el) { el.setAttribute('x', x); el.setAttribute('y', y); el.setAttribute('width', nw); el.setAttribute('height', Math.max(1, h)); } };
+                                                                                setRect('node_emp', x0, 25, emp_h); setRect('node_brut', x1, 25, brut_h); setRect('node_pat', x1, 25+brut_h+gap, pat_h); setRect('node_net', x2, 25, net_h); setRect('node_sal', x2, 25+net_h+gap, sal_h); setRect('node_pay', x3, 25, pay_h); setRect('node_tax', x3, 25+pay_h+gap, tax_h);
+
+                                                                                var setText = function(id, x, y, txt) { var el = getEl(id); if(el) { el.setAttribute('x', x); el.setAttribute('y', y); el.textContent = txt; } };
+                                                                                setText('text_emp', x0 - 10, 25 + emp_h/2, "Coût Employeur (" + Math.round(d.emp_cost) + " €)");
+                                                                                setText('text_brut', x1 + nw + 10, 25 + brut_h/2, "Brut (" + Math.round(d.brut) + " €)");
+                                                                                setText('text_pat', x1 + nw + 10, 25 + brut_h + gap + pat_h/2, "Cotis. Pat. (" + Math.round(d.pat) + " €)");
+                                                                                setText('text_net', x2 + nw + 10, 25 + net_h/2, "Net Imposable (" + Math.round(d.net_imp) + " €)");
+                                                                                setText('text_sal', x2 + nw + 10, 25 + net_h + gap + sal_h/2, "Cotis. Sal. (" + Math.round(d.sal) + " €)");
+                                                                                setText('text_pay', x3 + nw + 10, 25 + pay_h/2, "Net à Payer (" + Math.round(d.net_pay) + " €)");
+                                                                                setText('text_tax', x3 + nw + 10, 25 + pay_h + gap + tax_h/2, "PAS (" + Math.round(d.tax) + " €)");
+
+                                                                                var statBoard = getEl('stat_board'); if (statBoard) {
+                                                                                statBoard.innerHTML = ''; var tS=0, tP=0;
+                                                                                var emp = DB.employes.find(function(e){return e.id === parseInt(getEl('pay_select_emp').value);});
+                                                                                if(emp) {
+                                                                                var profile = getActiveProfile(emp);
+                                                                                if(profile) profile.rules.forEach(function(c){tS+=c.sal;tP+=c.pat;});
+                                                                                }
+                                                                                var cards = [{id:'brut',l:'Salaire Brut',v:Math.round(d.brut)+' €'},{id:'sal',l:'Taux Cotis. Sal.',v:tS.toFixed(2)+' %'},{id:'pat',l:'Taux Cotis. Pat.',v:tP.toFixed(2)+' %'},{id:'pas',l:'Taux PAS',v:d.pas_rate.toFixed(1)+' %'},{id:'net',l:'Net à Payer',v:Math.round(d.net_pay)+' €'},{id:'cout',l:'Coût Total',v:Math.round(d.emp_cost)+' €'}];
+                                                                                for(var i=0; i<cards.length; i++) { var c=cards[i]; statBoard.innerHTML += '<div class="stat-card editable" id="card_'+c.id+'"><div class="stat-label">'+c.l+' [+]'+c.v+'</div></div>'; }
+                                                                                    }
+                                                                                    }
+
+                                                                                    function updateSlidersFromDB() {
+                                                                                    var empId = parseInt(getEl('pay_select_emp').value); var emp = DB.employes.find(function(e) { return e.id === empId; }); if (!emp) return;
+                                                                                    var tS=0, tP=0;
+                                                                                    var profile = getActiveProfile(emp);
+                                                                                    if(profile) profile.rules.forEach(function(c){tS+=c.sal;tP+=c.pat;});
+                                                                                    getEl('slider_brut').value = emp.salaire_base; getEl('val_slider_brut').textContent = emp.salaire_base + ' €';
+                                                                                    getEl('slider_sal').value = tS.toFixed(2); getEl('val_slider_sal').textContent = tS.toFixed(2) + ' %';
+                                                                                    getEl('slider_pat').value = tP.toFixed(2); getEl('val_slider_pat').textContent = tP.toFixed(2) + ' %';
+                                                                                    getEl('slider_pas').value = emp.pas_rate || 0; getEl('val_slider_pas').textContent = (emp.pas_rate || 0) + ' %';
+                                                                                    }
+
+                                                                                    function renderHistory() {
+                                                                                    var tbody = getEl('hist_table_body'); if (!tbody) return; tbody.innerHTML = ''; var rev = DB.bulletins.slice().reverse();
+                                                                                    for (var i = 0; i < rev.length; i++) {
+                                                                                        var b = rev[i]; var tr = E('tr');
+                                                                                        tr.innerHTML = '<td>'+b.id+'</td><td>'+b.emp_name+'</td><td>'+b.mois+'/'+b.annee+'</td><td>'+Math.round(b.brut)+' €</td><td>'+Math.round(b.net)+' €</td><td>'+Math.round(b.cout)+' €</td><td style="white-space:nowrap;"><button class="btn btn-sm btn-info" id="view_bull_'+b.id+'" style="margin-right:5px;">Voir</button><button class="btn btn-sm btn-danger" id="del_bull_'+b.id+'">Suppr.</button></td>';
+                                                                                        tbody.appendChild(tr);
+                                                                                        }
+                                                                                        }
+
+                                                                                        function renderDashboard() {
+                                                                                        var cY = parseInt(getEl('global_year').value) || new Date().getFullYear();
+                                                                                        var mArr = []; for(var k=0; k<12; k++) mArr.push({brut:0,net:0,cost:0});
+                                                                                            var data = { kpi:{brut:0,net:0,pat:0,cost:0}, months:mArr, quarters:[0,0,0,0], employees:{}, parity:{M:{c:0,s:0},F:{c:0,s:0}} };
+                                                                                            for(var i=0; i<DB.employes.length; i++) { var em=DB.employes[i]; if(em.sexe==='F'){data.parity.F.c++;data.parity.F.s+=em.salaire_base;} else {data.parity.M.c++;data.parity.M.s+=em.salaire_base;} }
+                                                                                                for (var i=0; i<DB.bulletins.length; i++) {
+                                                                                                    var b = DB.bulletins[i]; if (parseInt(b.annee) === cY) {
+                                                                                                    data.kpi.brut += b.brut; data.kpi.net += b.net; data.kpi.pat += b.pat; data.kpi.cost += b.cout;
+                                                                                                    var m = parseInt(b.mois) - 1; if (m >= 0 && m < 12) { data.months[m].brut += b.brut; data.months[m].net += b.net; data.months[m].cost += b.cout; }
+                                                                                                        var q = Math.floor((parseInt(b.mois)-1)/3); if(q>=0&&q<4) data.quarters[q] += b.cout;
+                                                                                                            if (!data.employees[b.emp_name]) data.employees[b.emp_name] = 0; data.employees[b.emp_name] += b.cout;
+                                                                                                            }
+                                                                                                            }
+                                                                                                            getEl('dash_kpi_brut').textContent = Math.round(data.kpi.brut) + ' €'; getEl('dash_kpi_net').textContent = Math.round(data.kpi.net) + ' €';
+                                                                                                            getEl('dash_kpi_pat').textContent = Math.round(data.kpi.pat) + ' €'; getEl('dash_kpi_cost').textContent = Math.round(data.kpi.cost) + ' €';
+                                                                                                            var mL = ['Jan','Fév','Mar','Avr','Mai','Juin','Juil','Aoû','Sep','Oct','Nov','Déc']; var cC = getEl('dash_monthly_chart'); cC.innerHTML = '';
+                                                                                                            var mV = 1; for(var i=0; i<12; i++) if(data.months[i].cost>mV) mV=data.months[i].cost;
+                                                                                                                for(var i=0; i<12; i++) { cC.innerHTML += '<div class="chart-bar-group"><div class="chart-bars"><div class="chart-bar brut" style="height:'+((data.months[i].brut/mV)*100)+'%;"></div><div class="chart-bar net" style="height:'+((data.months[i].net/mV)*100)+'%;"></div><div class="chart-bar cost" style="height:'+((data.months[i].cost/mV)*100)+'%;"></div></div><div class="chart-label">'+mL[i]+'</div></div>'; }
+                                                                                                                    var dC = getEl('dash_quarterly_chart'); var tQ = data.quarters[0]+data.quarters[1]+data.quarters[2]+data.quarters[3] || 1; var dH='<div style="position:relative;width:180px;height:180px;"><svg viewBox="0 0 36 36" style="width:100%;height:100%;transform:rotate(-90deg);">'; var off=0; var cols=['#f59e0b','#4299e1','#48bb78','#ef4444'];
+                                                                                                                            for(var i=0;i<4;i++){var pct=data.quarters[i]/tQ; var dash=pct*100; dH+='<circle cx="18" cy="18" r="15.915" fill="none" stroke="'+cols[i]+'" stroke-width="4" stroke-dasharray="'+dash+' '+(100-dash)+'" stroke-dashoffset="'+(-off)+'"></circle>'; off+=dash;} dH+='</svg><div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;"><div style="font-size:12px;color:var(--text-muted);">TOTAL</div><div style="font-weight:bold;color:#fff;">'+Math.round(tQ)+' €</div></div></div><div>';
+                                                                                                                            var qL=['T1','T2','T3','T4']; for(var i=0;i<4;i++) dH+='<div style="display:flex;align-items:center;gap:8px;"><div style="width:12px;height:12px;background:'+cols[i]+';border-radius:2px;"></div><span>'+qL[i]+'</span><span style="margin-left:auto;font-weight:bold;">'+Math.round(data.quarters[i])+' €</span></div>'; dH+='</div>'; dC.innerHTML=dH;
+                                                                                                                            var tE = getEl('dash_top_emp'); var eA = Object.keys(data.employees).map(function(k){return {n:k,c:data.employees[k]};}); eA.sort(function(a,b){return b.c-a.c;}); var t5=eA.slice(0,5); var mE=1; if(t5.length>0)mE=t5[0].c; var eH='';
+                                                                                                                            if(t5.length===0) eH='Aucune donnée'; else for(var i=0;i<t5.length;i++) eH+='<div class="top-emp-row"><div class="top-emp-name">'+t5[i].n+'</div><div class="top-emp-bar-bg"><div class="top-emp-bar-fill" style="width:'+((t5[i].c/mE)*100)+'%;"></div></div><div class="top-emp-val">'+Math.round(t5[i].c)+' €</div></div>'; tE.innerHTML=eH;
+                                                                                                                                var pC = getEl('dash_parity_chart'); var aM=data.parity.M.c>0?data.parity.M.s/data.parity.M.c:0; var aF=data.parity.F.c>0?data.parity.F.s/data.parity.F.c:0; var mA=Math.max(aM,aF,1);
+                                                                                                                                pC.innerHTML = '<div class="parity-col"><div class="parity-bar male" style="height:'+((aM/mA)*150)+'px;">'+Math.round(aM)+'€</div><div class="parity-label">H ('+data.parity.M.c+')</div></div><div class="parity-col"><div class="parity-bar female" style="height:'+((aF/mA)*150)+'px;">'+Math.round(aF)+'€</div><div class="parity-label">F ('+data.parity.F.c+')</div></div>';
+                                                                                                                                var g = aM>0?((aM-aF)/aM)*100:0; if(aF>aM) g=-((aF-aM)/aF)*100;
+                                                                                                                                getEl('dash_parity_gap').innerHTML = '<strong style="color:'+(Math.abs(g)>5?'var(--danger)':'var(--success)')+';">Écart : '+(g>0?'+':'')+g.toFixed(1)+'%</strong>';
+                                                                                                                                }
+
+                                                                                                                                function getBulletinHTML(b) {
+                                                                                                                                if (b.sal === undefined) b.sal = 0; if (b.pat === undefined) b.pat = 0; if (b.net_social === undefined) b.net_social = b.net_imp || 0; if (b.net_imp === undefined) b.net_imp = b.net_social || 0; if (b.tax === undefined) b.tax = 0; if (!b.cotis_details) b.cotis_details = []; if (!b.line_items) b.line_items = []; if (b.reduc_fillon === undefined) b.reduc_fillon = 0; if (b.reduc_rqth === undefined) b.reduc_rqth = 0;
+                                                                                                                                var emp = DB.employes.find(function(e) { return e.id === b.emp_id; }) || { nom:'',prenom:'',poste:'',num_ss:'',adresse:'',convention:'',contrat:'',rqth:false };
+                                                                                                                                var l = DB.params.layout || defaultDB.params.layout; var cols = l.cols || 2; var template = l.template || 'classique';
+
+                                                                                                                                var css = '';
+                                                                                                                                if (template === 'classique') {
+                                                                                                                                css = '<style>'+
+                                                                                                                                    '.payslip-classique{font-family:"Courier New",monospace;padding:20px;color:#000;background:#fff;border:2px solid #000}'+
+                                                                                                                                    '.payslip-classique h2{color:#fff;background:#000;padding:10px;margin:0 0 20px 0;text-align:center;border:none;font-size:16px;text-transform:uppercase;letter-spacing:2px}'+
+                                                                                                                                    '.payslip-classique .ps-header{border-bottom:2px solid #000;padding-bottom:10px;margin-bottom:15px}'+
+                                                                                                                                    '.payslip-classique .ps-section-title{display:block;background:#e2e8f0;color:#000;padding:4px 8px;font-weight:bold;border-left:4px solid #000;margin-bottom:8px;text-transform:uppercase;font-size:12px}'+
+                                                                                                                                    '.payslip-classique .ps-table{width:100%;border-collapse:collapse;margin-bottom:15px}'+
+                                                                                                                                    '.payslip-classique .ps-table td{padding:4px;border-bottom:1px solid #ccc;font-size:12px}'+
+                                                                                                                                    '.payslip-classique .ps-table td.t{text-align:right;font-weight:bold}'+
+                                                                                                                                    '.payslip-classique .ps-total td{border-top:2px solid #000;font-weight:bold}'+
+                                                                                                                                    '.payslip-classique .ps-net td{background:#f0fff4;color:#2c7a7b}'+
+                                                                                                                                    '.payslip-classique .ps-cost td{background:#fff5f5;color:#c53030}'+
+                                                                                                                                    '</style>';
+                                                                                                                                } else if (template === 'moderne') {
+                                                                                                                                css = '<style>'+
+                                                                                                                                    '.payslip-moderne{font-family:"Arial",sans-serif;padding:0;color:#333;background:#fff;overflow:hidden;border-radius:12px}'+
+                                                                                                                                    '.payslip-moderne h2{color:#fff;background:'+escapeXML(l.titlecolor)+';padding:20px;margin:0 0 20px 0;text-align:left;border-radius:0 0 12px 12px;font-size:22px;box-shadow:0 4px 6px rgba(0,0,0,0.1)}'+
+                                                                                                                                    '.payslip-moderne .ps-header,.payslip-moderne .ps-info,.payslip-moderne .ps-grid{padding:0 20px}'+
+                                                                                                                                    '.payslip-moderne .ps-header{display:flex;justify-content:space-between}'+
+                                                                                                                                    '.payslip-moderne .ps-section-title{display:inline-block;color:'+escapeXML(l.titlecolor)+';font-weight:bold;font-size:12px;text-transform:uppercase;margin-bottom:10px;border-bottom:2px solid '+escapeXML(l.titlecolor)+';padding-bottom:2px}'+
+                                                                                                                                    '.payslip-moderne .ps-table{width:100%;border-collapse:separate;border-spacing:0 4px;margin-bottom:15px}'+
+                                                                                                                                    '.payslip-moderne .ps-table td{padding:8px 10px;background:#f8fafc;font-size:13px}'+
+                                                                                                                                    '.payslip-moderne .ps-table td:first-child{border-radius:6px 0 0 6px}'+
+                                                                                                                                    '.payslip-moderne .ps-table td.t{border-radius:0 6px 6px 0;font-weight:bold;background:#f1f5f9;text-align:right}'+
+                                                                                                                                    '.payslip-moderne .ps-total td{background:#fff !important;border-top:2px solid #e2e8f0 !important;font-weight:bold}'+
+                                                                                                                                    '.payslip-moderne .ps-total td:first-child{border-radius:0}'+
+                                                                                                                                    '.payslip-moderne .ps-total td.t{border-radius:0}'+
+                                                                                                                                    '.payslip-moderne .ps-net td{color:#fff !important;background:#2c7a7b !important;font-size:16px;border-radius:6px}'+
+                                                                                                                                    '.payslip-moderne .ps-cost td{color:#fff !important;background:#c53030 !important;font-size:16px;border-radius:6px}'+
+                                                                                                                                    '</style>';
+                                                                                                                                } else if (template === 'minimaliste') {
+                                                                                                                                css = '<style>'+
+                                                                                                                                    '.payslip-minimaliste{font-family:"Helvetica Neue",Arial,sans-serif;padding:40px;color:#111;background:#fff}'+
+                                                                                                                                    '.payslip-minimaliste h2{color:#111;background:none;border-bottom:1px solid #111;padding:0 0 20px 0;margin:0 0 30px 0;text-align:center;text-transform:uppercase;letter-spacing:4px;font-size:18px;font-weight:300}'+
+                                                                                                                                    '.payslip-minimaliste .ps-header{border:none;padding:0;margin-bottom:20px}'+
+                                                                                                                                    '.payslip-minimaliste .ps-section-title{display:block;color:#999;background:none;border-bottom:1px solid #eee;padding:0 0 5px 0;margin:20px 0 10px 0;text-transform:uppercase;font-size:11px;letter-spacing:1px}'+
+                                                                                                                                    '.payslip-minimaliste .ps-table{width:100%;border-collapse:collapse;margin-bottom:10px}'+
+                                                                                                                                    '.payslip-minimaliste .ps-table td{padding:6px 0;border:none;font-size:13px}'+
+                                                                                                                                    '.payslip-minimaliste .ps-table td.t{text-align:right;font-weight:600}'+
+                                                                                                                                    '.payslip-minimaliste .ps-total td{border-top:1px solid #111;padding:8px 0;font-weight:bold}'+
+                                                                                                                                    '.payslip-minimaliste .ps-net td{font-size:18px;letter-spacing:1px}'+
+                                                                                                                                    '.payslip-minimaliste .ps-cost td{font-size:18px;letter-spacing:1px}'+
+                                                                                                                                    '</style>';
+                                                                                                                                }
+
+                                                                                                                                var c1='<div class="ps-section-title">Rémunération</div><table class="ps-table"><tr><td style="width:70%;">Salaire de Base</td><td class="t">'+(emp.salaire_base||0).toFixed(2)+' €</td></tr>';
+                                                                                                                                    for(var i=0;i<b.line_items.length;i++){var it=b.line_items[i]; c1+='<tr><td>'+escapeXML(it.label)+'</td><td class="t">'+(it.type.indexOf('ded')!==-1?'-':'+')+it.amount.toFixed(2)+' €</td></tr>';}
+                                                                                                                                        c1+='<tr class="ps-total"><td>SALAIRE BRUT</td><td class="t">'+b.brut.toFixed(2)+' €</td></tr></table>';
+
+                                                                                                                                    var c2='<div class="ps-section-title">Cotisations Sociales</div><table class="ps-table">';
+                                                                                                                                        var tS=0,tP=0;
+                                                                                                                                        for(var i=0;i<b.cotis_details.length;i++){var c=b.cotis_details[i];tS+=c.partSal;tP+=c.partPat;c2+='<tr><td>'+escapeXML(c.nom)+'</td><td class="t">-'+c.partSal.toFixed(2)+' €</td></tr>';}
+                                                                                                                                            c2+='<tr class="ps-total"><td>Total Sal.</td><td class="t">-'+tS.toFixed(2)+' €</td></tr></table>';
+
+                                                                                                                                        var c3='<div class="ps-section-title">Synthèse &amp; Net</div><table class="ps-table"><tr class="ps-total"><td>NET SOCIAL</td><td class="t">'+b.net_social.toFixed(2)+' €</td></tr><tr><td>PAS ('+b.params_pas_rate+'%)</td><td class="t">-'+b.tax.toFixed(2)+' €</td></tr><tr class="ps-total ps-net"><td>NET A PAYER</td><td class="t">'+b.net.toFixed(2)+' €</td></tr></table><table class="ps-table"><tr class="ps-total"><td>Total Cot. Pat.</td><td class="t">'+tP.toFixed(2)+' €</td></tr><tr class="ps-total ps-cost"><td>COUT TOTAL</td><td class="t">'+b.cout.toFixed(2)+' €</td></tr></table>';
+
+                                                                                                                                        var h='<div class="p payslip-'+template+'" style="page-break-after: always; margin-bottom: 50px;">'+css+'<h2>BULLETIN DE PAIE</h2><div class="ps-header" style="display:flex;justify-content:space-between;margin-bottom:20px;"><div class="ps-comp"><strong>'+escapeXML(DB.company.name)+'</strong><br/>'+escapeXML(DB.company.address)+'</div><div class="ps-emp" style="text-align:right;"><strong>'+escapeXML(emp.nom)+' '+escapeXML(emp.prenom)+'</strong><br/>'+escapeXML(emp.adresse)+(emp.rqth?'<br/><span style="color:#c53030;font-weight:bold;">Statut RQTH</span>':'')+'</div></div><div class="ps-info" style="border-top:1px dashed #999;padding-top:10px;margin-bottom:15px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;"><span><strong>Période:</strong> '+escapeXML(b.mois)+'/'+escapeXML(b.annee)+'</span><span><strong>Poste:</strong> '+escapeXML(emp.poste)+'</span></div><div class="ps-grid" style="display:grid;gap:20px;grid-template-columns:'+(cols===1?'1fr':(cols===2?'1fr 1fr':'1fr 1fr 1fr'))+';"><div>'+c1+'</div><div>'+c2+c3+'</div></div></div>';
+                                                                                                                                        return h;
+                                                                                                                                        }
+
+                                                                                                                                        function showBulletin(id) { var b = DB.bulletins.find(function(x){return x.id===id;}); if(!b) return; getEl('bull_content').innerHTML = getBulletinHTML(b); getEl('modal_bull').style.display = 'flex'; }
+
+                                                                                                                                        // ATTACH EVENTS
+                                                                                                                                        getEl('btn_nav_dash').addEventListener('click', function(){ showView('dashboard'); });
+                                                                                                                                        getEl('btn_nav_emp').addEventListener('click', function(){ showView('employes'); });
+                                                                                                                                        getEl('btn_nav_pay').addEventListener('click', function(){ showView('paie'); });
+                                                                                                                                        getEl('btn_nav_hist').addEventListener('click', function(){ showView('historique'); });
+                                                                                                                                        getEl('btn_nav_param').addEventListener('click', function(){ showView('parametres'); });
+
+                                                                                                                                        getEl('emp_table_body').addEventListener('click', function(e){ if(!e.target.id) return; if(e.target.id.indexOf('edit_emp_')===0) openEmpModal(parseInt(e.target.id.split('_')[2])); else if(e.target.id.indexOf('del_emp_')===0) { var id=parseInt(e.target.id.split('_')[2]); DB.employes=DB.employes.filter(function(em){return em.id!==id;}); saveDB(); renderEmployes(); populatePayrollDropdown(); } });
+                                                                                                                                        getEl('btn_add_emp').addEventListener('click', function(){ openEmpModal(null); });
+                                                                                                                                        getEl('btn_close_emp').addEventListener('click', function(){ getEl('modal_emp').style.display='none'; });
+                                                                                                                                        getEl('btn_save_emp').addEventListener('click', function(){ var id=getEl('form_emp_id').value?parseInt(getEl('form_emp_id').value):null; var d={nom:getEl('form_emp_nom').value,prenom:getEl('form_emp_prenom').value,sexe:getEl('form_emp_sexe').value,poste:getEl('form_emp_poste').value,date_embauche:getEl('form_emp_date').value,contrat:getEl('form_emp_contrat').value,salaire_base:parseFloat(getEl('form_emp_salaire').value)||0,pas_rate:parseFloat(getEl('form_emp_pas').value)||0,rqth:getEl('form_emp_rqth').value==='true',rule_profile_id:parseInt(getEl('form_emp_profile').value),convention:getEl('form_emp_conv').value,adresse:getEl('form_emp_adresse').value,num_ss:getEl('form_emp_ss').value,rib:getEl('form_emp_iban').value}; if(id){var em=DB.employes.find(function(e){return e.id===id;}); if(em)Object.assign(em,d);} else {d.id=DB.nextEmpId++;DB.employes.push(d);} saveDB(); renderEmployes(); populatePayrollDropdown(); getEl('modal_emp').style.display='none'; showToast('Salarié enregistré'); });
+
+                                                                                                                                        getEl('btn_add_pay_row').addEventListener('click', function(){ addPayRow('',0,'base','add_brut'); });
+                                                                                                                                        getEl('pay_select_emp').addEventListener('change', function(){ updateSlidersFromDB(); updateSankey(); });
+                                                                                                                                        getEl('btn_calc_pay').addEventListener('click', function(){
+                                                                                                                                        var d=calcPayroll(); var id=parseInt(getEl('pay_select_emp').value); var em=DB.employes.find(function(e){return e.id===id;});
+                                                                                                                                        var bull={
+                                                                                                                                        id:DB.nextBullId++,
+                                                                                                                                        emp_id:id,
+                                                                                                                                        emp_name:em.nom+' '+em.prenom,
+                                                                                                                                        mois:getEl('pay_month').value,
+                                                                                                                                        annee:getEl('pay_year').value,
+                                                                                                                                        brut:d.brut,
+                                                                                                                                        sal:d.sal,
+                                                                                                                                        pat:d.pat,
+                                                                                                                                        net_social:d.net_social,
+                                                                                                                                        net_imp:d.net_imp,
+                                                                                                                                        tax:d.tax,
+                                                                                                                                        net:d.net_pay,
+                                                                                                                                        cout:d.emp_cost,
+                                                                                                                                        params_pas_rate:d.pas_rate,
+                                                                                                                                        reduc_fillon:d.reduc_fillon,
+                                                                                                                                        reduc_rqth:d.reduc_rqth,
+                                                                                                                                        cotis_details:d.cotis_details,
+                                                                                                                                        line_items:d.line_items
+                                                                                                                                        };
+                                                                                                                                        DB.bulletins.push(bull); saveDB(); clearPayRows(); addPayRow('',0,'base','add_brut'); showView('historique'); showToast('Bulletin sauvegardé'); updateSidebarStats();
+                                                                                                                                        });
+
+                                                                                                                                        getEl('hist_table_body').addEventListener('click', function(e){ if(!e.target.id) return; var p=e.target.id.split('_'); if(p[0]+'_'+p[1]=='view_bull') showBulletin(parseInt(p[2])); else if(p[0]+'_'+p[1]=='del_bull') { DB.bulletins=DB.bulletins.filter(function(b){return b.id!==parseInt(p[2]);}); saveDB(); renderHistory(); updateSidebarStats(); } });
+                                                                                                                                        getEl('btn_close_bull').addEventListener('click', function(){ getEl('modal_bull').style.display='none'; });
+                                                                                                                                        getEl('btn_print_bull').addEventListener('click', function(){ var w=window.open('','_blank'); if(w){w.document.write('<html><body>'+getEl('bull_content').innerHTML+'</body></html>');w.document.close();w.print();} });
+                                                                                                                                        getEl('btn_print_all').addEventListener('click', function(){ if(DB.bulletins.length===0){showToast('Aucun bulletin');return;} var h=''; for(var i=0;i<DB.bulletins.length;i++) h+=getBulletinHTML(DB.bulletins[i]); var w=window.open('','_blank'); if(w){w.document.write('<html><body>'+h+'</body></html>');w.document.close();w.print();} });
+
+                                                                                                                                            getEl('btn_save_company').addEventListener('click', function(){ DB.company.name=getEl('company_name').value; DB.company.address=getEl('company_address').value; DB.company.siret=getEl('company_siret').value; DB.company.ape=getEl('company_ape').value; DB.company.conv=getEl('company_conv').value; DB.company.logo=getEl('company_logo').value; saveDB(); showToast('Entreprise sauvegardée'); });
+                                                                                                                                            getEl('btn_save_layout').addEventListener('click', function(){ DB.params.layout.template=getEl('param_layout_template').value; DB.params.layout.font=getEl('param_layout_font').value; DB.params.layout.size=getEl('param_layout_size').value; DB.params.layout.margin=getEl('param_layout_margin').value; DB.params.layout.cols=getEl('param_layout_cols').value; DB.params.layout.titlecolor=getEl('param_layout_titlecolor').value; DB.params.layout.titlebg=getEl('param_layout_titlebg').value; DB.params.layout.header_note=getEl('param_layout_header_note').value; DB.params.layout.note=getEl('param_layout_note').value; saveDB(); showToast('Mise en page sauvegardée'); });
+
+                                                                                                                                            // Rule Profiles Management
+                                                                                                                                            getEl('rule_profile_select').addEventListener('change', function(e){ currentRuleProfileId = parseInt(e.target.value); loadParams(); });
+                                                                                                                                            getEl('btn_add_profile').addEventListener('click', function(){
+                                                                                                                                            var name = prompt("Entrez le nom du nouveau profil :", "Nouveau Profil");
+                                                                                                                                            if(name) {
+                                                                                                                                            DB.params.rule_profiles.push({ id: DB.params.nextProfileId++, name: name, smic: 1766.92, plafond_ss: 3864, rules: [] });
+                                                                                                                                            currentRuleProfileId = DB.params.nextProfileId - 1; saveDB(); loadParams(); showToast('Profil créé');
+                                                                                                                                            }
+                                                                                                                                            });
+                                                                                                                                            getEl('btn_dup_profile').addEventListener('click', function(){
+                                                                                                                                            var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; });
+                                                                                                                                            if(!profile) return;
+                                                                                                                                            var newName = prompt("Nom du nouveau profil (version) :", profile.name + " (Copie)");
+                                                                                                                                            if(newName) {
+                                                                                                                                            var deepCopyRules = JSON.parse(JSON.stringify(profile.rules));
+                                                                                                                                            DB.params.rule_profiles.push({
+                                                                                                                                            id: DB.params.nextProfileId++,
+                                                                                                                                            name: newName,
+                                                                                                                                            smic: profile.smic,
+                                                                                                                                            plafond_ss: profile.plafond_ss,
+                                                                                                                                            rules: deepCopyRules
+                                                                                                                                            });
+                                                                                                                                            currentRuleProfileId = DB.params.nextProfileId - 1;
+                                                                                                                                            saveDB(); loadParams();
+                                                                                                                                            showToast('Profil dupliqué');
+                                                                                                                                            }
+                                                                                                                                            });
+                                                                                                                                            getEl('btn_del_profile').addEventListener('click', function(){
+                                                                                                                                            if(DB.params.rule_profiles.length <= 1) { showToast('Impossible de supprimer le dernier profil'); return; }
+                                                                                                                                                DB.params.rule_profiles = DB.params.rule_profiles.filter(function(p){ return p.id != currentRuleProfileId; });
+                                                                                                                                                currentRuleProfileId = DB.params.rule_profiles[0].id; saveDB(); loadParams(); showToast('Profil supprimé');
+                                                                                                                                                });
+
+                                                                                                                                                getEl('btn_save_params').addEventListener('click', function(){
+                                                                                                                                                DB.params.taux_fillon=parseFloat(getEl('param_taux_fillon').value)||0.3194; DB.params.aide_rqth=parseFloat(getEl('param_aide_rqth').value)||0;
+                                                                                                                                                var r=[]; var rr=document.querySelectorAll('#ctrl_box .rule-row');
+                                                                                                                                                for(var i=0;i<rr.length;i++) r.push({code:getEl('rule_code_'+i).value,nom:getEl('rule_nom_'+i).value,base:getEl('rule_base_'+i).value,sal:parseFloat(getEl('rule_sal_'+i).value)||0,pat:parseFloat(getEl('rule_pat_'+i).value)||0,plafond:parseInt(getEl('rule_plafond_'+i).value)||0});
+                                                                                                                                                    var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; });
+                                                                                                                                                    if(profile) {
+                                                                                                                                                    profile.rules = r;
+                                                                                                                                                    profile.smic = parseFloat(getEl('param_smic').value) || 1766.92;
+                                                                                                                                                    profile.plafond_ss = parseFloat(getEl('param_plafond').value) || 3864;
+                                                                                                                                                    }
+                                                                                                                                                    saveDB(); showToast('Règles sauvegardées');
+                                                                                                                                                    });
+                                                                                                                                                    getEl('btn_add_rule').addEventListener('click', function(){
+                                                                                                                                                    var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; });
+                                                                                                                                                    if(profile) profile.rules.push({code:"NEW",nom:"Nouvelle",base:"brut",sal:0,pat:0,plafond:0}); saveDB(); loadParams();
+                                                                                                                                                    });
+                                                                                                                                                    getEl('ctrl_box').addEventListener('click', function(e){ if(e.target.id.indexOf('del_rule_')===0){
+                                                                                                                                                    var profile = DB.params.rule_profiles.find(function(p){ return p.id == currentRuleProfileId; });
+                                                                                                                                                    if(profile) profile.rules.splice(parseInt(e.target.id.split('_')[2]),1); saveDB(); loadParams();
+                                                                                                                                                    } });
+
+                                                                                                                                                    getEl('slider_brut').addEventListener('input', function(e){ var id=parseInt(getEl('pay_select_emp').value); var em=DB.employes.find(function(m){return m.id===id;}); if(em){em.salaire_base=parseFloat(e.target.value); getEl('val_slider_brut').textContent=em.salaire_base+' €'; saveDB(); updateSankey();} });
+                                                                                                                                                    getEl('slider_sal').addEventListener('input', function(e){ var v=parseFloat(e.target.value); getEl('val_slider_sal').textContent=v.toFixed(2)+' %'; var c=0; var emp=DB.employes.find(function(m){return m.id===parseInt(getEl('pay_select_emp').value);}); if(emp){ var profile=getActiveProfile(emp); if(profile){ profile.rules.forEach(function(r){c+=r.sal;}); if(c>0){var f=v/c; profile.rules.forEach(function(r){r.sal=parseFloat((r.sal*f).toFixed(2));}); saveDB(); updateSankey();} } } });
+                                                                                                                                                    getEl('slider_pat').addEventListener('input', function(e){ var v=parseFloat(e.target.value); getEl('val_slider_pat').textContent=v.toFixed(2)+' %'; var c=0; var emp=DB.employes.find(function(m){return m.id===parseInt(getEl('pay_select_emp').value);}); if(emp){ var profile=getActiveProfile(emp); if(profile){ profile.rules.forEach(function(r){c+=r.pat;}); if(c>0){var f=v/c; profile.rules.forEach(function(r){r.pat=parseFloat((r.pat*f).toFixed(2));}); saveDB(); updateSankey();} } } });
+                                                                                                                                                    getEl('slider_pas').addEventListener('input', function(e){ var id=parseInt(getEl('pay_select_emp').value); var em=DB.employes.find(function(m){return m.id===id;}); if(em){em.pas_rate=parseFloat(e.target.value); getEl('val_slider_pas').textContent=em.pas_rate+' %'; saveDB(); updateSankey();} });
+
+                                                                                                                                                    getEl('side_btn_new_pay').addEventListener('click', function(){ showView('paie'); });
+                                                                                                                                                    getEl('side_btn_new_emp').addEventListener('click', function(){ openEmpModal(null); });
+                                                                                                                                                    getEl('global_year').addEventListener('change', function(){ renderDashboard(); updateSidebarStats(); });
+                                                                                                                                                    getEl('btn_export').addEventListener('click', function(){ var c=document.documentElement.cloneNode(true); var s=c.getElementsByTagName('style')[0]; if(s) s.textContent='*{box-sizing:border-box}body{margin:0;background:#fff;color:#333;font-family:sans-serif}.panel{background:#f8f9fa;border:1px solid #ddd;padding:20px;margin:20px}h1,h2,h3{color:#333}.btn{display:none}input,select,textarea{width:100%;border:1px solid #ccc;padding:8px;margin-bottom:10px}.modal-overlay{display:none !important}#bg_rect{fill:#fff !important}'; var b=c.getElementById('bg_rect'); if(b) b.setAttribute('fill','#ffffff'); var sc=c.getElementsByTagName('script'); for(var i=sc.length-1;i>=0;i--) sc[i].parentNode.removeChild(sc[i]); var str=new XMLSerializer().serializeToString(c); if(str.indexOf('xmlns="http://www.w3.org/2000/svg"')===-1) str=str.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"'); getEl('export_text').value=str; getEl('modal_export').style.display='flex'; var l=getEl('download_link'); l.href=URL.createObjectURL(new Blob([str],{type:'image/svg+xml'})); });
+                                                                                                                                                            getEl('btn_close_export').addEventListener('click', function(){ getEl('modal_export').style.display='none'; });
+
+                                                                                                                                                            // INIT
+                                                                                                                                                            var cY = new Date().getFullYear(); getEl('global_year').value = cY; getEl('pay_year').value = cY;
+                                                                                                                                                            renderEmployes(); populatePayrollDropdown(); loadParams(); clearPayRows(); addPayRow('', 0, 'base', 'add_brut');
+                                                                                                                                                            showView('dashboard'); updateSidebarStats();
+                                                                                                                                                            if (dbg) { dbg.textContent = 'JS: Actif'; dbg.setAttribute('fill', '#48bb78'); }
+                                                                                                                                                            } catch (err) { alert("Erreur Fatale: " + err.message); }
+                                                                                                                                                            //]]></script>
+                                                                                                                                                    </div>
+                                                                                                                                                </foreignObject>
+                                                                                                                                            </svg>
