@@ -1,2 +1,2 @@
-# KizunaPro
+# ∞ KizunaPro
 Logiciel de Paie Française
